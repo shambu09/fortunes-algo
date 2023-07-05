@@ -1,11 +1,15 @@
 {
     "name": "fortunes-algo",
     "version": "1.0.0",
-    "description": "Implementation of Fortune's algorithm to compute Voronoi diagram",
+    "description": "Implementation of Fortune's algorithm to compute Voronoi diagrams",
     "main": "./dist/index.js",
     "files": [
         "dist/"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/shambu09/fortunes-algo.git"
+    },
     "scripts": {
         "build": "rimraf ./dist && tsc",
         "start": "npm run build && node dist/index.js",
