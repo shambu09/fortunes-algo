@@ -14,7 +14,7 @@
         "build": "rimraf ./dist && tsc",
         "start": "npm run build && node dist/index.js",
         "prepublish": "npm run build",
-        "test": "jest --coverage",
+        "test": "jest --detectOpenHandles --coverage",
         "test:watch": "jest --watch"
     },
     "author": "Shambu Valasang",

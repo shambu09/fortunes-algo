@@ -1,11 +1,13 @@
 import Point from "./Point";
 
-//                                      (start)
-//                                         |<-------------------(y = mx + c)
-// Left site of the edge  (right site)-->. | .<--(left site)
-// Right Site of the Edge                  |
-//                                         V<-------------------(direction)
-//                                       (end)
+//                        (start)
+//                           |<-------------------(y = mx + c)
+//                           |
+//          (right site)-->. | .<--(left site)
+//                           |
+//                           |
+//                           V<-------------------(direction)
+//                         (end)
 
 export default class Edge {
     start: Point;
