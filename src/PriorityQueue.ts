@@ -2,7 +2,7 @@
 // Implements Priority Queue - Internally uses a Min Heap.
 
 export default class PriorityQueue<T> {
-    private readonly container: Array<T>;
+    readonly container: Array<T>;
     private readonly getPriorityOfNode;
 
     constructor(key: (_: T) => number) {
@@ -94,5 +94,13 @@ export default class PriorityQueue<T> {
     push(newNode: T) {
         this.container.push(newNode);
         this.heapifyUp();
+    }
+
+    clear() {
+        this.container.length = 0;
+    }
+
+    empty(): boolean {
+        return this.length === 0;
     }
 }

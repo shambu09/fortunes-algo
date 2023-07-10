@@ -163,4 +163,45 @@ describe("Priority Queue", () => {
 
         expect(pq.length).toBe(0);
     });
+
+    it("handles clearing of queue", () => {
+        const pq = new PriorityQueue(
+            (node: { priority: number }) => node.priority
+        );
+
+        const n = 10;
+        for (let i = 0; i < n; i++) {
+            pq.push({ priority: i });
+        }
+
+        expect(pq.length).toBe(n);
+
+        pq.clear();
+
+        expect(pq.length).toBe(0);
+        expect(pq.pop()).toBeUndefined();
+        expect(pq.empty()).toBeTruthy();
+    });
+
+    it("can check for empty status of the queue", () => {
+        const pq = new PriorityQueue((node: number) => node);
+
+        const n = 10000;
+        for (let i = 0; i < n; i++) {
+            pq.push(i);
+        }
+
+        expect(pq.length).toBe(n);
+
+        let prev = -1;
+        while (pq.length > 0) {
+            const curr = pq.pop()!;
+            expect(curr).toBeGreaterThan(prev);
+            prev = curr;
+        }
+
+        expect(pq.empty()).toBeTruthy();
+        expect(pq.pop()).toBeUndefined();
+        expect(pq.length).toBe(0);
+    });
 });
