@@ -65,8 +65,8 @@ export default class Voronoi {
                 continue;
             }
 
-            if (eventIter.isSiteEvent) this.insertParabola(eventIter.point);
-            else this.removeParabola(eventIter);
+            if (eventIter.isSiteEvent) this.insertArc(eventIter.point);
+            else this.removeArc(eventIter);
         }
 
         // Complete any unfinished edges
@@ -81,7 +81,7 @@ export default class Voronoi {
         return this.edges;
     }
 
-    insertParabola(sitePoint: VPoint) {
+    insertArc(sitePoint: VPoint) {
         //If the encountered site is the first one to be processed, just add to the beachline as a Arc
         if (this.root === undefined) {
             this.root = new VParabola(sitePoint);
@@ -158,7 +158,7 @@ export default class Voronoi {
         this.checkCircleEvent(arcRight);
     }
 
-    removeParabola(event: VEvent) {}
+    removeArc(event: VEvent) {}
     finishEdge(parabola: VParabola) {}
     getXOfEdge(parabola: VParabola, y: number): number {
         return 0;
