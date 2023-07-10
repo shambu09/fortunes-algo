@@ -118,7 +118,7 @@ export default class Voronoi {
             return;
         }
 
-        //Get arc under/above the site event
+        //Get the arc under/above the site event
         let arcUnderSite = this.getArcByX(sitePoint.x);
 
         //Delete any circle events of the arc, it will be split anyways and child arcs will be tested for circle events later
