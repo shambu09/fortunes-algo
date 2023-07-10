@@ -82,13 +82,13 @@ export default class Voronoi {
     }
 
     insertArc(sitePoint: VPoint) {
-        //If the encountered site is the first one to be processed, just add to the beachline as a Arc
+        //If the encountered site is the first one to be processed, just add to the beachline as a arc
         if (this.root === undefined) {
             this.root = new VParabola(sitePoint);
             return;
         }
 
-        //Corner case -> If the if the encountered site is the second site and is on the same height as the first one
+        //Corner case -> If the encountered site is the second site and is on the same height as the first one
         if (this.root.isLeaf && this.root.site!.y - sitePoint.y < 1) {
             let rootSite = this.root.site!;
 
