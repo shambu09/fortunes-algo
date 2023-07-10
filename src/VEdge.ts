@@ -3,7 +3,7 @@ import VPoint from "./VPoint";
 //                        (start)
 //                           |<-------------------(y = mx + c)
 //                           |
-//          (right site)-->. | .<--(left site)
+//           (left site)-->. | .<--(right site)
 //                           |
 //                           |
 //                           V<-------------------(direction)

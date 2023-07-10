@@ -44,8 +44,8 @@ describe("VParabola", () => {
         const arc = new VParabola(focus);
         expect(arc).toBeDefined();
         expect(arc.isLeaf).toBeTruthy();
-        expect(arc.focus).toBeDefined();
-        expect(arc.focus).toEqual(focus);
+        expect(arc.site).toBeDefined();
+        expect(arc.site).toEqual(focus);
         expect(arc.circleEvent).toBeUndefined();
         expect(arc.parent).toBeUndefined();
         expect(arc.edge).toBeUndefined();
@@ -55,7 +55,7 @@ describe("VParabola", () => {
         const edge = new VParabola();
         expect(edge).toBeDefined();
         expect(edge.isLeaf).toBeFalsy();
-        expect(edge.focus).toBeUndefined();
+        expect(edge.site).toBeUndefined();
         expect(edge.circleEvent).toBeUndefined();
         expect(edge.parent).toBeUndefined();
         expect(edge.edge).toBeUndefined();
@@ -64,19 +64,19 @@ describe("VParabola", () => {
     it("works as a beachline data structure, can get next arc from an edge", () => {
         const edge2 = beachline.right!;
         const arc = edge2.EdgeGetNextArc()!;
-        expect(arc.focus!.x).toEqual(3);
+        expect(arc.site!.x).toEqual(3);
     });
 
     it("works as a beachline data structure, can get previous arc from an edge #1", () => {
         const edge2 = beachline.right!;
         const arc = edge2.EdgeGetPreviousArc()!;
-        expect(arc.focus!.x).toEqual(2);
+        expect(arc.site!.x).toEqual(2);
     });
 
     it("works as a beachline data structure, can get previous arc from an edge #2", () => {
         const edge3 = beachline.right!.right!;
         const arc = edge3.EdgeGetPreviousArc()!;
-        expect(arc.focus!.x).toEqual(5);
+        expect(arc.site!.x).toEqual(5);
     });
 
     it("works as a beachline data structure, can get next edge from an arc #1", () => {
@@ -100,12 +100,12 @@ describe("VParabola", () => {
     it("works as a beachline data structure, can get next arc from an arc #1", () => {
         const arc5 = subTree.right!.right!;
         const arc = arc5.ArcGetNextArc()!;
-        expect(arc.focus!.x).toEqual(6);
+        expect(arc.site!.x).toEqual(6);
     });
 
     it("works as a beachline data structure, can get previous arc from an arc #2", () => {
         const arc3 = subTree.left!;
         const arc = arc3.ArcGetPreviousArc()!;
-        expect(arc.focus!.x).toEqual(2);
+        expect(arc.site!.x).toEqual(2);
     });
 });

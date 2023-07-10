@@ -8,7 +8,7 @@ import VEvent from "./VEvent";
 
 export default class VParabola {
     isLeaf: boolean;
-    focus: VPoint | undefined; // If Parabola is a Arc then focus will be the site which has constructed the Arc
+    site: VPoint | undefined; // If Parabola is a Arc then focus will be the site which has constructed the Arc
     edge: VEdge | undefined;
     circleEvent: VEvent | undefined;
     parent: VParabola | undefined;
@@ -16,15 +16,15 @@ export default class VParabola {
     private _left: VParabola | undefined;
     private _right: VParabola | undefined;
 
-    constructor(focus?: VPoint) {
-        if (focus === undefined) {
-            this.focus = undefined;
+    constructor(site?: VPoint) {
+        if (site === undefined) {
+            this.site = undefined;
             this.isLeaf = false;
             this.edge = undefined;
             this.circleEvent = undefined;
             this.parent = undefined;
         } else {
-            this.focus = focus;
+            this.site = site;
             this.isLeaf = true;
             this.edge = undefined;
             this.circleEvent = undefined;
