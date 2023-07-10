@@ -1,4 +1,4 @@
-export default class Point {
+export default class VPoint {
     x: number;
     y: number;
 

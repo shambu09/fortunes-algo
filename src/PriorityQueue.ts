@@ -2,37 +2,41 @@
 // Implements Priority Queue - Internally uses a Min Heap.
 
 export default class PriorityQueue<T> {
-    readonly container: Array<T>;
-    readonly getPriorityOfNode;
+    private readonly container: Array<T>;
+    private readonly getPriorityOfNode;
 
     constructor(key: (_: T) => number) {
         this.container = [];
         this.getPriorityOfNode = key;
     }
 
-    getParentIndex(index: number): number {
+    get length(): number {
+        return this.container.length;
+    }
+
+    private getParentIndex(index: number): number {
         return Math.floor((index - 1) / 2);
     }
 
-    getLeftChildIndex(index: number): number {
+    private getLeftChildIndex(index: number): number {
         return 2 * index + 1;
     }
 
-    getRightChildIndex(index: number): number {
+    private getRightChildIndex(index: number): number {
         return 2 * index + 2;
     }
 
-    getPriorityAtIndex(index: number): number {
+    private getPriorityAtIndex(index: number): number {
         return this.getPriorityOfNode(this.container[index]);
     }
 
-    swap(index1: number, index2: number) {
+    private swap(index1: number, index2: number) {
         let temp = this.container[index1];
         this.container[index1] = this.container[index2];
         this.container[index2] = temp;
     }
 
-    heapifyUp() {
+    private heapifyUp() {
         let currentIndex = this.container.length - 1;
 
         while (currentIndex > 0) {
@@ -50,7 +54,7 @@ export default class PriorityQueue<T> {
         }
     }
 
-    heapifyDown() {
+    private heapifyDown() {
         let currentIndex = 0;
 
         while (this.getLeftChildIndex(currentIndex) < this.container.length) {

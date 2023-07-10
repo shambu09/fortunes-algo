@@ -1,35 +1,47 @@
 import "jest";
-import Parabola from "../src/Parabola";
-import Point from "../src/Point";
+import VParabola from "../src/VParabola";
+import VPoint from "../src/VPoint";
 
-describe("Parabola", () => {
-    const beachline = new Parabola();
+describe("VParabola", () => {
+    //       _____________________________Root_____________________________
+    //      /                                                              \
+    //     A1                                                ______________E1______________
+    //                                                      /                              \
+    //                                                     A2                        ______E2______
+    //                                                                              /             \
+    //                                                                           __E3__          __E5__
+    //                                                                          /      \        /      \
+    //                                                                         A3      E4      A6       A7
+    //                                                                                 / \
+    //                                                                                A4  A5
+
+    const beachline = new VParabola();
     let currentNode = beachline;
 
-    currentNode.left = new Parabola(new Point(1, 1));
-    currentNode.right = new Parabola();
+    currentNode.left = new VParabola(new VPoint(1, 1));
+    currentNode.right = new VParabola();
     currentNode = currentNode.right;
 
-    currentNode.left = new Parabola(new Point(2, 2));
-    currentNode.right = new Parabola();
+    currentNode.left = new VParabola(new VPoint(2, 2));
+    currentNode.right = new VParabola();
     currentNode = currentNode.right;
 
-    const subTree = new Parabola();
-    subTree.left = new Parabola(new Point(3, 3));
-    subTree.right = new Parabola();
-    subTree.right.left = new Parabola(new Point(4, 4));
-    subTree.right.right = new Parabola(new Point(5, 5));
+    const subTree = new VParabola();
+    subTree.left = new VParabola(new VPoint(3, 3));
+    subTree.right = new VParabola();
+    subTree.right.left = new VParabola(new VPoint(4, 4));
+    subTree.right.right = new VParabola(new VPoint(5, 5));
 
     currentNode.left = subTree;
-    currentNode.right = new Parabola();
+    currentNode.right = new VParabola();
     currentNode = currentNode.right;
 
-    currentNode.left = new Parabola(new Point(6, 6));
-    currentNode.right = new Parabola(new Point(7, 7));
+    currentNode.left = new VParabola(new VPoint(6, 6));
+    currentNode.right = new VParabola(new VPoint(7, 7));
 
     it("can be initialised to be a Arc", () => {
-        const focus = new Point(1, 2);
-        const arc = new Parabola(focus);
+        const focus = new VPoint(1, 2);
+        const arc = new VParabola(focus);
         expect(arc).toBeDefined();
         expect(arc.isLeaf).toBeTruthy();
         expect(arc.focus).toBeDefined();
@@ -40,7 +52,7 @@ describe("Parabola", () => {
     });
 
     it("can be initialised to be a Edge", () => {
-        const edge = new Parabola();
+        const edge = new VParabola();
         expect(edge).toBeDefined();
         expect(edge.isLeaf).toBeFalsy();
         expect(edge.focus).toBeUndefined();
@@ -85,13 +97,13 @@ describe("Parabola", () => {
         expect(edge).toEqual(beachline.right!.right);
     });
 
-    it("works as a beachline data structure, can get next arc from an arc", () => {
+    it("works as a beachline data structure, can get next arc from an arc #1", () => {
         const arc5 = subTree.right!.right!;
         const arc = arc5.ArcGetNextArc()!;
         expect(arc.focus!.x).toEqual(6);
     });
 
-    it("works as a beachline data structure, can get previous arc from an arc", () => {
+    it("works as a beachline data structure, can get previous arc from an arc #2", () => {
         const arc3 = subTree.left!;
         const arc = arc3.ArcGetPreviousArc()!;
         expect(arc.focus!.x).toEqual(2);

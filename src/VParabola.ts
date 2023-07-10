@@ -1,21 +1,22 @@
-import Edge from "./Edge";
-import Point from "./Point";
+import VEdge from "./VEdge";
+import VPoint from "./VPoint";
+import VEvent from "./VEvent";
 
 // Parabola class
 // Could be a Arc or Edge
 // Edges are internal nodes and Arcs are leaf nodes
 
-export default class Parabola {
+export default class VParabola {
     isLeaf: boolean;
-    focus: Point | undefined; // If Parabola is a Arc then focus will be the site which has constructed the Arc
-    edge: Edge | undefined;
-    circleEvent: Event | undefined;
-    parent: Parabola | undefined;
+    focus: VPoint | undefined; // If Parabola is a Arc then focus will be the site which has constructed the Arc
+    edge: VEdge | undefined;
+    circleEvent: VEvent | undefined;
+    parent: VParabola | undefined;
 
-    private _left: Parabola | undefined;
-    private _right: Parabola | undefined;
+    private _left: VParabola | undefined;
+    private _right: VParabola | undefined;
 
-    constructor(focus?: Point) {
+    constructor(focus?: VPoint) {
         if (focus === undefined) {
             this.focus = undefined;
             this.isLeaf = false;
@@ -31,36 +32,36 @@ export default class Parabola {
         }
     }
 
-    get left(): Parabola | undefined {
+    get left(): VParabola | undefined {
         return this._left;
     }
 
-    set left(leftChild: Parabola) {
-        leftChild.parent = this as Parabola;
+    set left(leftChild: VParabola) {
+        leftChild.parent = this as VParabola;
         this._left = leftChild;
     }
 
-    get right(): Parabola | undefined {
+    get right(): VParabola | undefined {
         return this._right;
     }
 
-    set right(rightChild: Parabola) {
+    set right(rightChild: VParabola) {
         this._right = rightChild;
         rightChild.parent = this;
     }
 
-    ArcGetPreviousArc(): Parabola | undefined {
+    ArcGetPreviousArc(): VParabola | undefined {
         return this.ArcGetPreviousEdge()?.EdgeGetPreviousArc();
     }
 
-    ArcGetNextArc(): Parabola | undefined {
+    ArcGetNextArc(): VParabola | undefined {
         return this.ArcGetNextEdge()?.EdgeGetNextArc();
     }
 
-    ArcGetPreviousEdge(): Parabola | undefined {
+    ArcGetPreviousEdge(): VParabola | undefined {
         if (!this.isLeaf) return undefined;
         let parentParabola = this.parent!;
-        let currentParabola: Parabola = this;
+        let currentParabola: VParabola = this;
 
         while (parentParabola.left === currentParabola) {
             if (parentParabola.parent === undefined) return undefined;
@@ -71,10 +72,10 @@ export default class Parabola {
         return parentParabola;
     }
 
-    ArcGetNextEdge(): Parabola | undefined {
+    ArcGetNextEdge(): VParabola | undefined {
         if (!this.isLeaf) return undefined;
         let parentParabola = this.parent!;
-        let currentParabola: Parabola = this;
+        let currentParabola: VParabola = this;
 
         while (parentParabola.right === currentParabola) {
             if (parentParabola.parent === undefined) return undefined;
@@ -85,7 +86,7 @@ export default class Parabola {
         return parentParabola;
     }
 
-    EdgeGetPreviousArc(): Parabola | undefined {
+    EdgeGetPreviousArc(): VParabola | undefined {
         if (this.isLeaf) return undefined;
         let currentParabola = this.left!;
 
@@ -95,7 +96,7 @@ export default class Parabola {
         return currentParabola;
     }
 
-    EdgeGetNextArc(): Parabola | undefined {
+    EdgeGetNextArc(): VParabola | undefined {
         if (this.isLeaf) return undefined;
         let currentParabola = this.right!;
 

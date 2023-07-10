@@ -26,19 +26,19 @@ describe("Priority Queue", () => {
         pq.push(nodes[1]);
         pq.push(nodes[2]);
 
-        expect(pq.container.length).toBe(3);
+        expect(pq.length).toBe(3);
         pq.pop();
 
-        expect(pq.container.length).toBe(2);
+        expect(pq.length).toBe(2);
         pq.pop();
         pq.pop();
-        expect(pq.container.length).toBe(0);
+        expect(pq.length).toBe(0);
 
         expect(pq.pop()).toBeUndefined();
-        expect(pq.container.length).toBe(0);
+        expect(pq.length).toBe(0);
     });
 
-    it("pops node based on its priority", () => {
+    it("returns elements in the correct priority order #1", () => {
         interface INode {
             value: number;
             priority: number;
@@ -66,7 +66,7 @@ describe("Priority Queue", () => {
             pq.push(node);
         }
 
-        expect(pq.container.length).toBe(13);
+        expect(pq.length).toBe(13);
         expect(pq.pop()).toStrictEqual(nodes[12]);
         expect(pq.pop()?.priority).toStrictEqual(nodes[5].priority);
         expect(pq.pop()?.priority).toStrictEqual(nodes[6].priority);
@@ -78,6 +78,89 @@ describe("Priority Queue", () => {
         }
 
         expect(pq.pop()).toBeUndefined();
-        expect(pq.container.length).toBe(0);
+        expect(pq.length).toBe(0);
+    });
+
+    it("returns elements in the correct priority order #2", () => {
+        interface INode {
+            value: string;
+            priority: number;
+        }
+
+        let nodes: INode[] = [
+            { value: "A", priority: 5 },
+            { value: "B", priority: 3 },
+            { value: "C", priority: 7 },
+            { value: "D", priority: 1 },
+            { value: "E", priority: 4 },
+        ];
+
+        const pq = new PriorityQueue((node: INode) => node.priority);
+
+        for (let node of nodes) {
+            pq.push(node);
+        }
+
+        let result = "";
+        while (pq.length > 0) {
+            result += pq.pop()!.value;
+        }
+
+        expect(result).toBe("DBEAC");
+    });
+
+    it("handles duplicate priorities correctly", () => {
+        interface INode {
+            value: string;
+            priority: number;
+        }
+
+        let nodes: INode[] = [
+            { value: "A", priority: 3 },
+            { value: "B", priority: 5 },
+            { value: "C", priority: 3 },
+            { value: "D", priority: 1 },
+            { value: "E", priority: 5 },
+        ];
+
+        const pq = new PriorityQueue((node: INode) => node.priority);
+
+        for (let node of nodes) {
+            pq.push(node);
+        }
+
+        let result = "";
+        while (pq.length > 0) {
+            result += pq.pop()!.value;
+        }
+
+        expect(result).toBe("DACBE");
+    });
+
+    it("handles an empty priority queue correctly", () => {
+        const pq = new PriorityQueue((node: number) => node);
+
+        expect(pq.length).toBe(0);
+        expect(pq.pop()).toBeUndefined();
+    });
+
+    it("handles pushing and popping large number of elements", () => {
+        const pq = new PriorityQueue((node: number) => node);
+
+        const n = 10000;
+        for (let i = 0; i < n; i++) {
+            pq.push(i);
+        }
+
+        expect(pq.length).toBe(n);
+
+        let prev = -1;
+        while (pq.length > 0) {
+            const curr = pq.pop()!;
+            expect(curr).toBeGreaterThan(prev);
+            prev = curr;
+        }
+
+        expect(pq.length).toBe(0);
     });
 });

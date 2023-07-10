@@ -1,4 +1,4 @@
-import Point from "./Point";
+import VPoint from "./VPoint";
 
 //                        (start)
 //                           |<-------------------(y = mx + c)
@@ -9,17 +9,17 @@ import Point from "./Point";
 //                           V<-------------------(direction)
 //                         (end)
 
-export default class Edge {
-    start: Point;
-    end: Point | undefined;
-    direction: Point;
-    left: Point;
-    right: Point;
+export default class VEdge {
+    start: VPoint;
+    end: VPoint | undefined;
+    direction: VPoint;
+    left: VPoint;
+    right: VPoint;
     m: number;
     c: number;
-    neighbour: Edge | undefined;
+    neighbour: VEdge | undefined;
 
-    constructor(start: Point, left: Point, right: Point) {
+    constructor(start: VPoint, left: VPoint, right: VPoint) {
         this.start = start;
         this.left = left;
         this.right = right;
@@ -29,6 +29,6 @@ export default class Edge {
 
         this.m = (-1 * (right.x - left.x)) / (right.y - left.y);
         this.c = start.y - this.m * start.x;
-        this.direction = new Point(right.y - left.y, -1 * (right.x - left.x));
+        this.direction = new VPoint(right.y - left.y, -1 * (right.x - left.x));
     }
 }
