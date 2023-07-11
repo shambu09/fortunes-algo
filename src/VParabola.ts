@@ -50,6 +50,15 @@ export default class VParabola {
         rightChild.parent = this;
     }
 
+    delete() {
+        this.site = undefined;
+        this.edge = undefined;
+        this.circleEvent = undefined;
+        this.parent = undefined;
+        this._left = undefined;
+        this._right = undefined;
+    }
+
     ArcGetPreviousArc(): VParabola | undefined {
         return this.ArcGetPreviousEdge()?.EdgeGetPreviousArc();
     }
