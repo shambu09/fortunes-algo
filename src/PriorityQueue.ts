@@ -2,7 +2,7 @@
 // Implements Priority Queue - Internally uses a Heap with the optional custom comparator.
 // By default pops out nodes with the lowest priority value.
 
-export default class PriorityQueue<T = number> {
+export default class PriorityQueue<T> {
     readonly container: Array<T>;
     private readonly comparator;
 

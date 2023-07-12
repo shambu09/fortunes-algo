@@ -11,15 +11,12 @@ interface IQueue {
     push: (event: VEvent) => void;
 }
 
-type Vertices = Array<VPoint>;
-type Edges = Array<VEdge>;
-
 export default class Voronoi {
     private width: number = 0;
     private height: number = 0;
     private ly: number = 0;
-    private places: Vertices = [];
-    private edges: Edges = [];
+    private places: Array<VPoint> = [];
+    private edges: Array<VEdge> = [];
 
     private queue: IQueue | undefined;
     private root: VParabola | undefined;
@@ -30,7 +27,11 @@ export default class Voronoi {
         if (queue !== undefined) this.queue = queue;
     }
 
-    getEdges(places: Vertices, width: number, height: number): Edges {
+    getEdges(
+        places: Array<VPoint>,
+        width: number,
+        height: number
+    ): Array<VEdge> {
         this.height = height;
         this.width = width;
         this.ly = 0;
@@ -82,7 +83,7 @@ export default class Voronoi {
         return this.edges;
     }
 
-    insertArc(sitePoint: VPoint) {
+    private insertArc(sitePoint: VPoint) {
         // If the encountered site is the first one to be processed, just add to the beachline as a arc
         if (this.root === undefined) {
             this.root = new VParabola(sitePoint);
@@ -159,7 +160,7 @@ export default class Voronoi {
         this.checkCircleEvent(arcRight);
     }
 
-    removeArc(circleEvent: VEvent) {
+    private removeArc(circleEvent: VEvent) {
         const arcToBeRemoved = circleEvent.arc!;
 
         // Get left and right edges
@@ -228,7 +229,7 @@ export default class Voronoi {
         this.checkCircleEvent(arcRight);
     }
 
-    finishEdge(parabola: VParabola) {
+    private finishEdge(parabola: VParabola) {
         if (parabola.isLeaf) {
             parabola.delete();
             return;
@@ -250,7 +251,7 @@ export default class Voronoi {
         parabola.delete();
     }
 
-    getXOfEdge(edge: VParabola, y: number): number {
+    private getXOfEdge(edge: VParabola, y: number): number {
         const arcLeft = edge.EdgeGetPreviousArc()!;
         const arcRight = edge.EdgeGetNextArc()!;
 
@@ -288,7 +289,7 @@ export default class Voronoi {
         return res;
     }
 
-    getArcByX(newSiteX: number): VParabola {
+    private getArcByX(newSiteX: number): VParabola {
         let parent = this.root!;
         let currX = 0.0;
 
@@ -302,7 +303,7 @@ export default class Voronoi {
         return parent;
     }
 
-    getY(arcSite: VPoint, siteX: number): number {
+    private getY(arcSite: VPoint, siteX: number): number {
         const t = 2.0 * (arcSite.y - this.ly);
         const a = 1.0 / t;
         const b = (-2.0 * arcSite.x) / t;
@@ -311,7 +312,7 @@ export default class Voronoi {
         return a * siteX * siteX + b * siteX + c;
     }
 
-    checkCircleEvent(arc: VParabola) {
+    private checkCircleEvent(arc: VParabola) {
         const edgeLeft = arc.ArcGetPreviousEdge();
         const edgeRight = arc.ArcGetNextEdge();
 
@@ -350,7 +351,7 @@ export default class Voronoi {
         this.queue!.push(newCircleEvent);
     }
 
-    getEdgeIntersection(
+    private getEdgeIntersection(
         leftEdege: VEdge,
         rightEdge: VEdge
     ): VPoint | undefined {
