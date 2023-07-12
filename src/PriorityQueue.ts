@@ -32,7 +32,7 @@ export default class PriorityQueue<T = number> {
     }
 
     private swap(index1: number, index2: number) {
-        let temp = this.container[index1];
+        const temp = this.container[index1];
         this.container[index1] = this.container[index2];
         this.container[index2] = temp;
     }

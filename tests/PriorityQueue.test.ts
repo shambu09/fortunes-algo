@@ -3,7 +3,7 @@ import PriorityQueue from "../src/PriorityQueue";
 
 describe("Priority Queue - Lower Priority First", () => {
     it("can be constructed", () => {
-        const pq = new PriorityQueue(
+        new PriorityQueue(
             (node1: { priority: number }, node2: { priority: number }) =>
                 node1.priority < node2.priority
         );
@@ -15,7 +15,7 @@ describe("Priority Queue - Lower Priority First", () => {
             priority: number;
         }
 
-        let nodes: Array<INode> = [
+        const nodes: Array<INode> = [
             { value: 1, priority: 15 },
             { value: 2, priority: 11 },
             { value: 3, priority: 5 },
@@ -48,7 +48,7 @@ describe("Priority Queue - Lower Priority First", () => {
             priority: number;
         }
 
-        let nodes: Array<INode> = [
+        const nodes: Array<INode> = [
             { value: 0, priority: 99999 },
             { value: 1, priority: 15 },
             { value: 2, priority: 11 },
@@ -68,7 +68,7 @@ describe("Priority Queue - Lower Priority First", () => {
             (node1: INode, node2: INode) => node1.priority < node2.priority
         );
 
-        for (let node of nodes) {
+        for (const node of nodes) {
             pq.push(node);
         }
 
@@ -93,7 +93,7 @@ describe("Priority Queue - Lower Priority First", () => {
             priority: number;
         }
 
-        let nodes: INode[] = [
+        const nodes: INode[] = [
             { value: "A", priority: 5 },
             { value: "B", priority: 3 },
             { value: "C", priority: 7 },
@@ -105,7 +105,7 @@ describe("Priority Queue - Lower Priority First", () => {
             (node1: INode, node2: INode) => node1.priority < node2.priority
         );
 
-        for (let node of nodes) {
+        for (const node of nodes) {
             pq.push(node);
         }
 
@@ -194,7 +194,7 @@ describe("Priority Queue - Higher Priority First", () => {
             priority: number;
         }
 
-        let nodes: INode[] = [
+        const nodes: INode[] = [
             { value: "A", priority: 5 },
             { value: "B", priority: 3 },
             { value: "C", priority: 7 },
@@ -206,7 +206,7 @@ describe("Priority Queue - Higher Priority First", () => {
             (node1: INode, node2: INode) => node1.priority > node2.priority
         );
 
-        for (let node of nodes) {
+        for (const node of nodes) {
             pq.push(node);
         }
 

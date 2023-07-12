@@ -70,7 +70,7 @@ export default class VParabola {
     ArcGetPreviousEdge(): VParabola | undefined {
         if (!this.isLeaf) return undefined;
         let parentParabola = this.parent!;
-        let currentParabola: VParabola = this;
+        let currentParabola: VParabola = this!;
 
         while (parentParabola.left === currentParabola) {
             if (parentParabola.parent === undefined) return undefined;
@@ -84,7 +84,7 @@ export default class VParabola {
     ArcGetNextEdge(): VParabola | undefined {
         if (!this.isLeaf) return undefined;
         let parentParabola = this.parent!;
-        let currentParabola: VParabola = this;
+        let currentParabola: VParabola = this!;
 
         while (parentParabola.right === currentParabola) {
             if (parentParabola.parent === undefined) return undefined;
