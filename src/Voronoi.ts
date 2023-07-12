@@ -43,11 +43,12 @@ export default class Voronoi {
         if (this.queue !== undefined) this.queue.clear();
         else
             this.queue = new PriorityQueue(
-                (event: VEvent) => event.y
+                (leftEvent: VEvent, rightEvent: VEvent) =>
+                    leftEvent.y < rightEvent.y
             ) as IQueue;
 
         // Push all the site events into the Queue
-        for (let place of this.vertices) {
+        for (const place of this.places) {
             this.queue.push(new VEvent(place, true));
         }
 
@@ -71,7 +72,7 @@ export default class Voronoi {
 
         // Complete any unfinished edges
         this.finishEdge(this.root!);
-        for (let edge of this.edges) {
+        for (const edge of this.edges) {
             if (edge.neighbour !== undefined) {
                 edge.start = edge.neighbour.end!;
                 edge.neighbour = undefined;
@@ -82,17 +83,17 @@ export default class Voronoi {
     }
 
     insertArc(sitePoint: VPoint) {
-        //If the encountered site is the first one to be processed, just add to the beachline as a arc
+        // If the encountered site is the first one to be processed, just add to the beachline as a arc
         if (this.root === undefined) {
             this.root = new VParabola(sitePoint);
             return;
         }
 
-        //Corner case -> If the encountered site is the second site and is on the same height as the first one
+        // Corner case -> If the encountered site is the second site and is on the same height as the first one
         if (this.root.isLeaf && this.root.site!.y - sitePoint.y < 1) {
-            let rootSite = this.root.site!;
+            const rootSite = this.root.site!;
 
-            let edgeStart = new VPoint(
+            const edgeStart = new VPoint(
                 (sitePoint.x + rootSite.x) / 2,
                 this.height
             );
@@ -101,13 +102,13 @@ export default class Voronoi {
 
             this.root.isLeaf = false;
 
-            //(rootSite)-->. | .<--(sitePoint)
+            // (rootSite)-->. | .<--(sitePoint)
             if (rootSite.x < sitePoint.x) {
                 this.root.left = new VParabola(rootSite);
                 this.root.right = new VParabola(sitePoint);
                 this.root.edge = new VEdge(edgeStart, rootSite, sitePoint);
             }
-            //(sitePoint)-->. | .<--(rootSite)
+            // (sitePoint)-->. | .<--(rootSite)
             else {
                 this.root.left = new VParabola(sitePoint);
                 this.root.right = new VParabola(rootSite);
@@ -118,34 +119,34 @@ export default class Voronoi {
             return;
         }
 
-        //Get the arc under/above the site event
-        let arcUnderSite = this.getArcByX(sitePoint.x);
+        // Get the arc under/above the site event
+        const arcUnderSite = this.getArcByX(sitePoint.x);
 
-        //Delete any circle events of the arc, it will be split anyways and child arcs will be tested for circle events later
+        // Delete any circle events of the arc, it will be split anyways and child arcs will be tested for circle events later
         if (arcUnderSite.circleEvent !== undefined) {
             this.deleted!.add(arcUnderSite.circleEvent);
             arcUnderSite.circleEvent = undefined;
         }
 
-        let edgeStart = new VPoint(
+        const edgeStart = new VPoint(
             sitePoint.x,
             this.getY(arcUnderSite.site!, sitePoint.x)
         );
         this.vertices!.push(edgeStart);
 
-        let edgeLeft = new VEdge(edgeStart, arcUnderSite.site!, sitePoint);
-        let edgeRight = new VEdge(edgeStart, sitePoint, arcUnderSite.site!);
+        const edgeLeft = new VEdge(edgeStart, arcUnderSite.site!, sitePoint);
+        const edgeRight = new VEdge(edgeStart, sitePoint, arcUnderSite.site!);
 
         edgeLeft.neighbour = edgeRight;
         this.edges.push(edgeLeft);
 
-        //Build the SubTree, considering right edge as the parent edge of the SubTree
+        // Build the SubTree, considering right edge as the parent edge of the SubTree
         arcUnderSite.isLeaf = false;
         arcUnderSite.edge = edgeRight;
 
-        let arcLeft = new VParabola(arcUnderSite.site!);
-        let arcMiddle = new VParabola(sitePoint);
-        let arcRight = new VParabola(arcUnderSite.site!);
+        const arcLeft = new VParabola(arcUnderSite.site!);
+        const arcMiddle = new VParabola(sitePoint);
+        const arcRight = new VParabola(arcUnderSite.site!);
 
         arcUnderSite.right = arcRight;
         arcUnderSite.left = new VParabola();
@@ -159,20 +160,20 @@ export default class Voronoi {
     }
 
     removeArc(circleEvent: VEvent) {
-        let arcToBeRemoved = circleEvent.arc!;
+        const arcToBeRemoved = circleEvent.arc!;
 
-        //Get left and right edges
-        let edgeLeft = arcToBeRemoved.ArcGetPreviousEdge()!;
-        let edgeRight = arcToBeRemoved.ArcGetNextEdge()!;
+        // Get left and right edges
+        const edgeLeft = arcToBeRemoved.ArcGetPreviousEdge()!;
+        const edgeRight = arcToBeRemoved.ArcGetNextEdge()!;
 
-        //Get left and right arcs
-        let arcLeft = edgeLeft.EdgeGetPreviousArc()!;
-        let arcRight = edgeRight.EdgeGetNextArc()!;
+        // Get left and right arcs
+        const arcLeft = edgeLeft.EdgeGetPreviousArc()!;
+        const arcRight = edgeRight.EdgeGetNextArc()!;
 
         if (arcLeft === arcRight)
             console.log("error - the left and right arcs have the same focus!");
 
-        //Remove circle events of left and right arc because now they are subtended by a new edge
+        // Remove circle events of left and right arc because now they are subtended by a new edge
         if (arcLeft.circleEvent !== undefined) {
             this.deleted!.add(arcLeft.circleEvent);
             arcLeft.circleEvent = undefined;
@@ -182,18 +183,18 @@ export default class Voronoi {
             arcRight.circleEvent = undefined;
         }
 
-        let endEdge = new VPoint(
+        const endEdge = new VPoint(
             circleEvent.point.x,
             this.getY(arcToBeRemoved.site!, circleEvent.point.x)
         );
 
         this.vertices!.push(endEdge);
 
-        //Complete the left and right edges
+        // Complete the left and right edges
         edgeLeft.edge!.end = endEdge;
         edgeRight.edge!.end = endEdge;
 
-        //Find the edge which is higher in the beachline tree
+        // Find the edge which is higher in the beachline tree
         let higher: VParabola;
         let parent = arcToBeRemoved;
 
@@ -206,8 +207,8 @@ export default class Voronoi {
         higher!.edge = new VEdge(endEdge, arcLeft.site!, arcRight.site!);
         this.edges.push(higher!.edge);
 
-        //Remove the arc from the beachline tree and process accordingly
-        let grandParent = arcToBeRemoved.parent!.parent!;
+        // Remove the arc from the beachline tree and process accordingly
+        const grandParent = arcToBeRemoved.parent!.parent!;
         if (arcToBeRemoved.parent!.left === arcToBeRemoved) {
             if (grandParent.left === arcToBeRemoved.parent)
                 grandParent.left = arcToBeRemoved.parent!.right!;
@@ -239,7 +240,7 @@ export default class Voronoi {
             x = Math.max(this.width, parabola.edge!.start.x + 10);
         else x = Math.min(0, parabola.edge!.start.x - 10);
 
-        let endEdge = new VPoint(x, parabola.edge!.m * x + parabola.edge!.c);
+        const endEdge = new VPoint(x, parabola.edge!.m * x + parabola.edge!.c);
         parabola.edge!.end = endEdge;
         this.vertices?.push(endEdge);
 
@@ -250,30 +251,36 @@ export default class Voronoi {
     }
 
     getXOfEdge(edge: VParabola, y: number): number {
-        let arcLeft = edge.EdgeGetPreviousArc()!;
-        let arcRight = edge.EdgeGetNextArc()!;
+        const arcLeft = edge.EdgeGetPreviousArc()!;
+        const arcRight = edge.EdgeGetNextArc()!;
 
-        let arcLeftSite = arcLeft.site!;
-        let arcRightSite = arcRight.site!;
+        const arcLeftSite = arcLeft.site!;
+        const arcRightSite = arcRight.site!;
 
+        // Calculate coefficients for the quadratic equation that represents the parabola
+        // equation of each site
         let t = 2.0 * (arcLeftSite.y - y);
-        let a1 = 1.0 / t;
-        let b1 = (-2.0 * arcLeftSite.x) / t;
-        let c1 = (arcLeftSite.x * arcLeftSite.x) / t + t / 4.0 + y;
+        const a1 = 1.0 / t;
+        const b1 = (-2.0 * arcLeftSite.x) / t;
+        const c1 = (arcLeftSite.x * arcLeftSite.x) / t + t / 4.0 + y;
 
         t = 2.0 * (arcRightSite.y - y);
-        let a2 = 1.0 / t;
-        let b2 = (-2.0 * arcRightSite.x) / t;
-        let c2 = (arcRightSite.x * arcRightSite.x) / t + t / 4.0 + y;
+        const a2 = 1.0 / t;
+        const b2 = (-2.0 * arcRightSite.x) / t;
+        const c2 = (arcRightSite.x * arcRightSite.x) / t + t / 4.0 + y;
 
-        let a = a1 - a2;
-        let b = b1 - b2;
-        let c = c1 - c2;
+        // Calculate coefficients for the quadratic equation that represents the
+        // difference between the parabolas of the left and right sites
+        const a = a1 - a2;
+        const b = b1 - b2;
+        const c = c1 - c2;
 
-        let discriminant = b * b - 4.0 * a * c;
-        let x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-        let x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+        const discriminant = b * b - 4.0 * a * c;
+        const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+        const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
 
+        // Choose the maximum or minimum x-coordinate based on the relative y-coordinates
+        // Check more on intersection of two like parabolas
         let res;
         if (arcLeftSite.y < arcRightSite.y) res = Math.max(x1, x2);
         else res = Math.min(x1, x2);
@@ -285,7 +292,7 @@ export default class Voronoi {
         let parent = this.root!;
         let currX = 0.0;
 
-        //Traverse the tree till a arc is found which is nearest to the x position of the new site
+        // Traverse the tree till a arc is found which is nearest to the x position of the new site
         while (!parent.isLeaf) {
             currX = this.getXOfEdge(parent, this.ly);
             if (currX > newSiteX) parent = parent.left!;
@@ -296,16 +303,73 @@ export default class Voronoi {
     }
 
     getY(arcSite: VPoint, siteX: number): number {
-        let t = 2.0 * (arcSite.y - this.ly);
-        let a = 1.0 / t;
-        let b = (-2.0 * arcSite.x) / t;
-        let c = (arcSite.x * arcSite.x) / t + t / 4.0 + this.ly;
+        const t = 2.0 * (arcSite.y - this.ly);
+        const a = 1.0 / t;
+        const b = (-2.0 * arcSite.x) / t;
+        const c = (arcSite.x * arcSite.x) / t + t / 4.0 + this.ly;
 
         return a * siteX * siteX + b * siteX + c;
     }
 
-    checkCircleEvent(arc: VParabola) {}
-    getEdgeIntersection(edge1: VEdge, edge2: VEdge): VPoint {
-        return new VPoint(0, 0);
+    checkCircleEvent(arc: VParabola) {
+        const edgeLeft = arc.ArcGetPreviousEdge();
+        const edgeRight = arc.ArcGetNextEdge();
+
+        const arcLeft = edgeLeft?.EdgeGetPreviousArc();
+        const arcRight = edgeRight?.EdgeGetNextArc();
+
+        if (
+            arcLeft === undefined ||
+            arcRight === undefined ||
+            arcLeft.site === arcRight.site
+        )
+            return;
+
+        const intersectionPoint = this.getEdgeIntersection(
+            edgeLeft!.edge!,
+            edgeRight!.edge!
+        );
+
+        if (intersectionPoint === undefined) return;
+
+        const dx = arcLeft!.site!.x - intersectionPoint.x;
+        const dy = arcLeft!.site!.y - intersectionPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // left arc site, right arc site and the sweep line are equidistant from the intersection point
+        if (intersectionPoint.y - distance >= this.ly) return;
+
+        const newCircleEvent = new VEvent(
+            new VPoint(intersectionPoint.x, intersectionPoint.y - distance),
+            false
+        );
+        this.vertices!.push(newCircleEvent.point);
+        arc.circleEvent = newCircleEvent;
+        newCircleEvent.arc = arc;
+
+        this.queue!.push(newCircleEvent);
+    }
+
+    getEdgeIntersection(
+        leftEdege: VEdge,
+        rightEdge: VEdge
+    ): VPoint | undefined {
+        const x = (rightEdge.c - leftEdege.c) / (leftEdege.m - rightEdge.m);
+        const y = leftEdege.m * x + leftEdege.c;
+
+        if ((x - leftEdege.start.x) / leftEdege.direction.x < 0)
+            return undefined;
+        if ((y - leftEdege.start.y) / leftEdege.direction.y < 0)
+            return undefined;
+
+        if ((x - rightEdge.start.x) / rightEdge.direction.x < 0)
+            return undefined;
+        if ((y - rightEdge.start.y) / rightEdge.direction.y < 0)
+            return undefined;
+
+        const intersectionPoint = new VPoint(x, y);
+        this.vertices!.push(intersectionPoint);
+
+        return intersectionPoint;
     }
 }
