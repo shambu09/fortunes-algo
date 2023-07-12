@@ -1,10 +1,11 @@
 import "jest";
 import PriorityQueue from "../src/PriorityQueue";
 
-describe("Priority Queue", () => {
+describe("Priority Queue - Lower Priority First", () => {
     it("can be constructed", () => {
         const pq = new PriorityQueue(
-            (node: { priority: number }) => node.priority
+            (node1: { priority: number }, node2: { priority: number }) =>
+                node1.priority < node2.priority
         );
     });
 
@@ -21,7 +22,10 @@ describe("Priority Queue", () => {
             { value: 4, priority: 25 },
         ];
 
-        const pq = new PriorityQueue((node: INode) => node.priority);
+        const pq = new PriorityQueue(
+            (node1: INode, node2: INode) => node1.priority < node2.priority
+        );
+
         pq.push(nodes[0]);
         pq.push(nodes[1]);
         pq.push(nodes[2]);
@@ -60,7 +64,9 @@ describe("Priority Queue", () => {
             { value: 12, priority: 0 },
         ];
 
-        const pq = new PriorityQueue((node: INode) => node.priority);
+        const pq = new PriorityQueue(
+            (node1: INode, node2: INode) => node1.priority < node2.priority
+        );
 
         for (let node of nodes) {
             pq.push(node);
@@ -95,7 +101,9 @@ describe("Priority Queue", () => {
             { value: "E", priority: 4 },
         ];
 
-        const pq = new PriorityQueue((node: INode) => node.priority);
+        const pq = new PriorityQueue(
+            (node1: INode, node2: INode) => node1.priority < node2.priority
+        );
 
         for (let node of nodes) {
             pq.push(node);
@@ -109,43 +117,15 @@ describe("Priority Queue", () => {
         expect(result).toBe("DBEAC");
     });
 
-    it("handles duplicate priorities correctly", () => {
-        interface INode {
-            value: string;
-            priority: number;
-        }
-
-        let nodes: INode[] = [
-            { value: "A", priority: 3 },
-            { value: "B", priority: 5 },
-            { value: "C", priority: 3 },
-            { value: "D", priority: 1 },
-            { value: "E", priority: 5 },
-        ];
-
-        const pq = new PriorityQueue((node: INode) => node.priority);
-
-        for (let node of nodes) {
-            pq.push(node);
-        }
-
-        let result = "";
-        while (pq.length > 0) {
-            result += pq.pop()!.value;
-        }
-
-        expect(result).toBe("DACBE");
-    });
-
     it("handles an empty priority queue correctly", () => {
-        const pq = new PriorityQueue((node: number) => node);
+        const pq = new PriorityQueue();
 
         expect(pq.length).toBe(0);
         expect(pq.pop()).toBeUndefined();
     });
 
     it("handles pushing and popping large number of elements", () => {
-        const pq = new PriorityQueue((node: number) => node);
+        const pq = new PriorityQueue();
 
         const n = 10000;
         for (let i = 0; i < n; i++) {
@@ -166,7 +146,8 @@ describe("Priority Queue", () => {
 
     it("handles clearing of queue", () => {
         const pq = new PriorityQueue(
-            (node: { priority: number }) => node.priority
+            (node1: { priority: number }, node2: { priority: number }) =>
+                node1.priority < node2.priority
         );
 
         const n = 10;
@@ -184,7 +165,7 @@ describe("Priority Queue", () => {
     });
 
     it("can check for empty status of the queue", () => {
-        const pq = new PriorityQueue((node: number) => node);
+        const pq = new PriorityQueue();
 
         const n = 10000;
         for (let i = 0; i < n; i++) {
@@ -197,6 +178,108 @@ describe("Priority Queue", () => {
         while (pq.length > 0) {
             const curr = pq.pop()!;
             expect(curr).toBeGreaterThan(prev);
+            prev = curr;
+        }
+
+        expect(pq.empty()).toBeTruthy();
+        expect(pq.pop()).toBeUndefined();
+        expect(pq.length).toBe(0);
+    });
+});
+
+describe("Priority Queue - Higher Priority First", () => {
+    it("returns elements in the correct priority order - higher priority first", () => {
+        interface INode {
+            value: string;
+            priority: number;
+        }
+
+        let nodes: INode[] = [
+            { value: "A", priority: 5 },
+            { value: "B", priority: 3 },
+            { value: "C", priority: 7 },
+            { value: "D", priority: 1 },
+            { value: "E", priority: 4 },
+        ];
+
+        const pq = new PriorityQueue(
+            (node1: INode, node2: INode) => node1.priority > node2.priority
+        );
+
+        for (let node of nodes) {
+            pq.push(node);
+        }
+
+        let result = "";
+        while (pq.length > 0) {
+            result += pq.pop()!.value;
+        }
+
+        expect(result).toBe("CAEBD");
+    });
+
+    it("handles an empty priority queue correctly", () => {
+        const pq = new PriorityQueue<{ value: string; priority: number }>(
+            (node1, node2) => node1.priority > node2.priority
+        );
+
+        expect(pq.length).toBe(0);
+        expect(pq.pop()).toBeUndefined();
+    });
+
+    it("handles pushing and popping large number of elements", () => {
+        const pq = new PriorityQueue<number>((node1, node2) => node1 > node2);
+
+        const n = 10000;
+        for (let i = 0; i < n; i++) {
+            pq.push(i);
+        }
+
+        expect(pq.length).toBe(n);
+
+        let prev = n;
+        while (pq.length > 0) {
+            const curr = pq.pop()!;
+            expect(curr).toBeLessThan(prev);
+            prev = curr;
+        }
+
+        expect(pq.length).toBe(0);
+    });
+
+    it("handles clearing of queue", () => {
+        const pq = new PriorityQueue<{ priority: number }>(
+            (node1, node2) => node1.priority > node2.priority
+        );
+
+        const n = 10;
+        for (let i = 0; i < n; i++) {
+            pq.push({ priority: i });
+        }
+
+        expect(pq.length).toBe(n);
+
+        pq.clear();
+
+        expect(pq.length).toBe(0);
+        expect(pq.pop()).toBeUndefined();
+        expect(pq.empty()).toBeTruthy();
+    });
+
+    it("can check for empty status of the queue", () => {
+        const pq = new PriorityQueue<number>((node1, node2) => node1 > node2);
+
+        const n = 10000;
+        for (let i = 0; i < n; i++) {
+            pq.push(i);
+        }
+
+        expect(pq.length).toBe(n);
+
+        let prev = n;
+        while (pq.length > 0) {
+            const curr = pq.pop()!;
+            expect(curr).toBeLessThan(prev);
             prev = curr;
         }
 

@@ -1,13 +1,14 @@
 // Class PriorityQueue
-// Implements Priority Queue - Internally uses a Min Heap.
+// Implements Priority Queue - Internally uses a Heap with the optional custom comparator.
+// By default pops out nodes with the lowest priority value.
 
-export default class PriorityQueue<T> {
+export default class PriorityQueue<T = number> {
     readonly container: Array<T>;
-    private readonly getPriorityOfNode;
+    private readonly comparator;
 
-    constructor(key: (_: T) => number) {
+    constructor(comparator: (_: T, __: T) => boolean = (l, r) => l < r) {
         this.container = [];
-        this.getPriorityOfNode = key;
+        this.comparator = comparator;
     }
 
     get length(): number {
@@ -26,8 +27,8 @@ export default class PriorityQueue<T> {
         return 2 * index + 2;
     }
 
-    private getPriorityAtIndex(index: number): number {
-        return this.getPriorityOfNode(this.container[index]);
+    private compareUsingIndex(index1: number, index2: number): boolean {
+        return this.comparator(this.container[index1], this.container[index2]);
     }
 
     private swap(index1: number, index2: number) {
@@ -40,14 +41,11 @@ export default class PriorityQueue<T> {
         let currentIndex = this.container.length - 1;
 
         while (currentIndex > 0) {
-            const parentindex = this.getParentIndex(currentIndex);
+            const parentIndex = this.getParentIndex(currentIndex);
 
-            if (
-                this.getPriorityAtIndex(currentIndex) <
-                this.getPriorityAtIndex(parentindex)
-            ) {
-                this.swap(currentIndex, parentindex);
-                currentIndex = parentindex;
+            if (this.compareUsingIndex(currentIndex, parentIndex)) {
+                this.swap(currentIndex, parentIndex);
+                currentIndex = parentIndex;
             } else {
                 break;
             }
@@ -60,21 +58,17 @@ export default class PriorityQueue<T> {
         while (this.getLeftChildIndex(currentIndex) < this.container.length) {
             const leftChildIndex = this.getLeftChildIndex(currentIndex);
             const rightChildIndex = this.getRightChildIndex(currentIndex);
-            let smallerChildIndex = leftChildIndex;
+            let swappableChildIndex = leftChildIndex;
 
             if (
                 rightChildIndex < this.container.length &&
-                this.getPriorityAtIndex(leftChildIndex) >
-                    this.getPriorityAtIndex(rightChildIndex)
+                this.compareUsingIndex(rightChildIndex, leftChildIndex)
             )
-                smallerChildIndex = rightChildIndex;
+                swappableChildIndex = rightChildIndex;
 
-            if (
-                this.getPriorityAtIndex(currentIndex) >
-                this.getPriorityAtIndex(smallerChildIndex)
-            ) {
-                this.swap(currentIndex, smallerChildIndex);
-                currentIndex = smallerChildIndex;
+            if (this.compareUsingIndex(swappableChildIndex, currentIndex)) {
+                this.swap(currentIndex, swappableChildIndex);
+                currentIndex = swappableChildIndex;
             } else {
                 break;
             }
