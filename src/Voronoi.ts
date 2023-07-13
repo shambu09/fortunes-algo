@@ -439,7 +439,7 @@ export default class Voronoi {
     ): VPoint | undefined {
         const intersectionPoint = new VPoint(0, 0);
         if (
-            !this.TryAndGetEdgeIntersection(
+            !this.tryAndGetEdgeIntersection(
                 leftEdge,
                 rightEdge,
                 intersectionPoint
@@ -452,7 +452,7 @@ export default class Voronoi {
         return intersectionPoint;
     }
 
-    private TryAndGetEdgeIntersection(
+    private tryAndGetEdgeIntersection(
         leftEdge: VEdge,
         rightEdge: VEdge,
         placeHolderPoint: VPoint
