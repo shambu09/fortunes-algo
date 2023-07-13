@@ -73,20 +73,6 @@ export default class Voronoi {
 
         // Complete any unfinished edges
         this.finishEdge(this.root!);
-        for (const edge of this.edges) {
-            if (edge.neighbour !== undefined) {
-                edge.start = edge.neighbour.end!;
-                edge.neighbour = undefined;
-            }
-            if (
-                edge.end!.x > this.width ||
-                edge.end!.x < 0 ||
-                edge.end!.y > this.height ||
-                edge.end!.y < 0
-            ) {
-                edge.end = this.getEdgeIntersectBoundary(edge);
-            }
-        }
 
         // Cleanup edges
         this.edges = this.edges
