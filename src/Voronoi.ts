@@ -236,33 +236,7 @@ export default class Voronoi {
             return;
         }
 
-        let x, y;
-
-        // Edges with finite slope
-        if (isFinite(parabola.edge!.m)) {
-            if (parabola.edge!.direction.x > 0.0) {
-                x = Math.max(this.width, parabola.edge!.start.x + 10);
-            } else {
-                x = Math.min(0, parabola.edge!.start.x - 10);
-            }
-            y = parabola.edge!.m * x + parabola.edge!.c;
-        }
-
-        // Vertical Edges
-        else {
-            // 270 degrees slope
-            x = parabola.edge!.start.x;
-            if (parabola.edge!.m < 0) {
-                y = 0;
-            }
-
-            // 90 degrees slope
-            else {
-                y = this.height;
-            }
-        }
-
-        const endEdge = new VPoint(x, y);
+        const endEdge = this.getEdgeIntersectBoundary(parabola.edge!);
         parabola.edge!.end = endEdge;
         this.vertices?.push(endEdge);
 
@@ -270,6 +244,65 @@ export default class Voronoi {
         this.finishEdge(parabola.right!);
 
         parabola.delete();
+    }
+
+    private getEdgeIntersectBoundary(edge: VEdge): VPoint {
+        // More info --> https://math.stackexchange.com/questions/2738250/intersection-of-ray-starting-inside-square-with-that-square
+
+        let x, y;
+        let x_intersect,
+            y_intersect,
+            t_x = 0,
+            t_y = 0;
+        const x_d = edge.direction.x;
+        const y_d = edge.direction.y;
+        const x_0 = edge.start.x;
+        const y_0 = edge.start.y;
+        const x_min = 0;
+        const y_min = 0;
+        const x_max = this.width;
+        const y_max = this.height;
+
+        if (x_d > 0) {
+            x_intersect = "RIGHT";
+            t_x = (x_max - x_0) / x_d;
+        } else if (x_d < 0) {
+            x_intersect = "LEFT";
+            t_x = (x_min - x_0) / x_d;
+        } else {
+            x_intersect = "NONE";
+        }
+
+        if (y_d > 0) {
+            y_intersect = "TOP";
+            t_y = (y_max - y_0) / y_d;
+        } else if (y_d < 0) {
+            y_intersect = "BOTTOM";
+            t_y = (y_min - y_0) / y_d;
+        } else {
+            y_intersect = "NONE";
+        }
+
+        if (x_intersect === "NONE") {
+            x = x_0;
+            y = y_0 + t_y * y_d;
+        } else if (y_intersect === "NONE") {
+            x = x_0 + t_x * x_d;
+            y = y_0;
+        } else {
+            if (t_x < t_y) {
+                x = x_0 + t_x * x_d;
+                y = y_0 + t_x * y_d;
+            } else if (t_y < t_x) {
+                x = x_0 + t_y * x_d;
+                y = y_0 + t_y * y_d;
+            } else {
+                x = x_0 + t_x * x_d;
+                y = y_0 + t_x * y_d;
+            }
+        }
+
+        return new VPoint(x, y);
     }
 
     private getXOfEdge(edge: VParabola, y: number): number {
