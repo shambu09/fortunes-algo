@@ -4,4 +4,3 @@ import VPoint from "./VPoint";
 import Voronoi from "./Voronoi";
 
 export { PriorityQueue, VEdge, VPoint, Voronoi };
-

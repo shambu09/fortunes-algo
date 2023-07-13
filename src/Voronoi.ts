@@ -45,7 +45,7 @@ export default class Voronoi {
         else
             this.queue = new PriorityQueue(
                 (leftEvent: VEvent, rightEvent: VEvent) =>
-                    leftEvent.y < rightEvent.y
+                    leftEvent.y > rightEvent.y
             ) as IQueue;
 
         // Push all the site events into the Queue
@@ -276,15 +276,20 @@ export default class Voronoi {
         const b = b1 - b2;
         const c = c1 - c2;
 
-        const discriminant = b * b - 4.0 * a * c;
-        const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-        const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-
-        // Choose the maximum or minimum x-coordinate based on the relative y-coordinates
-        // Check more on intersection of two like parabolas
         let res;
-        if (arcLeftSite.y < arcRightSite.y) res = Math.max(x1, x2);
-        else res = Math.min(x1, x2);
+
+        if (a === 0) {
+            res = -c / b;
+        } else {
+            const discriminant = b * b - 4.0 * a * c;
+            const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+            const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+
+            // Choose the maximum or minimum x-coordinate based on the relative y-coordinates
+            // Check more on intersection of two like parabolas
+            if (arcLeftSite.y < arcRightSite.y) res = Math.max(x1, x2);
+            else res = Math.min(x1, x2);
+        }
 
         return res;
     }
@@ -352,16 +357,26 @@ export default class Voronoi {
     }
 
     private getEdgeIntersection(
-        leftEdege: VEdge,
+        leftEdge: VEdge,
         rightEdge: VEdge
     ): VPoint | undefined {
-        const x = (rightEdge.c - leftEdege.c) / (leftEdege.m - rightEdge.m);
-        const y = leftEdege.m * x + leftEdege.c;
+        let x, y;
 
-        if ((x - leftEdege.start.x) / leftEdege.direction.x < 0)
-            return undefined;
-        if ((y - leftEdege.start.y) / leftEdege.direction.y < 0)
-            return undefined;
+        if (!isFinite(leftEdge.m) && !isFinite(rightEdge.m)) return undefined;
+        if (!isFinite(leftEdge.m)) {
+            x = leftEdge.start.x;
+            y = rightEdge.m * x + rightEdge.c;
+        } else if (!isFinite(rightEdge.m)) {
+            x = rightEdge.start.x;
+            y = leftEdge.m * x + leftEdge.c;
+        } else if (leftEdge.m === rightEdge.m) return undefined;
+        else {
+            x = (rightEdge.c - leftEdge.c) / (leftEdge.m - rightEdge.m);
+            y = leftEdge.m * x + leftEdge.c;
+        }
+
+        if ((x - leftEdge.start.x) / leftEdge.direction.x < 0) return undefined;
+        if ((y - leftEdge.start.y) / leftEdge.direction.y < 0) return undefined;
 
         if ((x - rightEdge.start.x) / rightEdge.direction.x < 0)
             return undefined;
