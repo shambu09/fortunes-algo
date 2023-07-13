@@ -78,7 +78,45 @@ export default class Voronoi {
                 edge.start = edge.neighbour.end!;
                 edge.neighbour = undefined;
             }
+            if (
+                edge.end!.x > this.width ||
+                edge.end!.x < 0 ||
+                edge.end!.y > this.height ||
+                edge.end!.y < 0
+            ) {
+                edge.end = this.getEdgeIntersectBoundary(edge);
+            }
         }
+
+        // Cleanup edges
+        this.edges = this.edges
+            .map((edge) => {
+                if (edge.neighbour !== undefined) {
+                    edge.start = edge.neighbour.end!;
+                    edge.neighbour = undefined;
+                }
+                if (
+                    edge.end!.x > this.width ||
+                    edge.end!.x < 0 ||
+                    edge.end!.y > this.height ||
+                    edge.end!.y < 0
+                ) {
+                    edge.end = this.getEdgeIntersectBoundary(edge);
+                }
+                return edge;
+            })
+            .filter((edge) => {
+                return !(
+                    edge.end!.x > this.width ||
+                    edge.end!.x < 0 ||
+                    edge.end!.y > this.height ||
+                    edge.end!.y < 0 ||
+                    edge.start!.x > this.width ||
+                    edge.start!.x < 0 ||
+                    edge.start!.y > this.height ||
+                    edge.start!.y < 0
+                );
+            });
 
         return this.edges;
     }
