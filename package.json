@@ -1,6 +1,6 @@
 {
     "name": "fortunes-algorithm",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "Implementation of Fortune's algorithm to compute Voronoi diagrams",
     "main": "./dist/index.js",
     "files": [
