@@ -133,6 +133,7 @@ export default class Voronoi {
             sitePoint.x,
             this.getY(arcUnderSite.site!, sitePoint.x)
         );
+
         this.vertices!.push(edgeStart);
 
         const edgeLeft = new VEdge(edgeStart, arcUnderSite.site!, sitePoint);
@@ -235,13 +236,33 @@ export default class Voronoi {
             return;
         }
 
-        let x: number;
+        let x, y;
 
-        if (parabola.edge!.direction.x > 0.0)
-            x = Math.max(this.width, parabola.edge!.start.x + 10);
-        else x = Math.min(0, parabola.edge!.start.x - 10);
+        // Edges with finite slope
+        if (isFinite(parabola.edge!.m)) {
+            if (parabola.edge!.direction.x > 0.0) {
+                x = Math.max(this.width, parabola.edge!.start.x + 10);
+            } else {
+                x = Math.min(0, parabola.edge!.start.x - 10);
+            }
+            y = parabola.edge!.m * x + parabola.edge!.c;
+        }
 
-        const endEdge = new VPoint(x, parabola.edge!.m * x + parabola.edge!.c);
+        // Vertical Edges
+        else {
+            // 270 degrees slope
+            x = parabola.edge!.start.x;
+            if (parabola.edge!.m < 0) {
+                y = 0;
+            }
+
+            // 90 degrees slope
+            else {
+                y = this.height;
+            }
+        }
+
+        const endEdge = new VPoint(x, y);
         parabola.edge!.end = endEdge;
         this.vertices?.push(endEdge);
 
@@ -313,7 +334,6 @@ export default class Voronoi {
         const a = 1.0 / t;
         const b = (-2.0 * arcSite.x) / t;
         const c = (arcSite.x * arcSite.x) / t + t / 4.0 + this.ly;
-
         return a * siteX * siteX + b * siteX + c;
     }
 
@@ -360,32 +380,59 @@ export default class Voronoi {
         leftEdge: VEdge,
         rightEdge: VEdge
     ): VPoint | undefined {
+        const intersectionPoint = new VPoint(0, 0);
+        if (
+            !this.TryAndGetEdgeIntersection(
+                leftEdge,
+                rightEdge,
+                intersectionPoint
+            )
+        )
+            return undefined;
+
+        this.vertices!.push(intersectionPoint);
+
+        return intersectionPoint;
+    }
+
+    private TryAndGetEdgeIntersection(
+        leftEdge: VEdge,
+        rightEdge: VEdge,
+        placeHolderPoint: VPoint
+    ): boolean {
         let x, y;
 
-        if (!isFinite(leftEdge.m) && !isFinite(rightEdge.m)) return undefined;
-        if (!isFinite(leftEdge.m)) {
+        // left-->| |<--right (parallel edges)
+        if (!isFinite(leftEdge.m) && !isFinite(rightEdge.m)) {
+            return false;
+        }
+
+        // left-->| /<--right
+        else if (!isFinite(leftEdge.m)) {
             x = leftEdge.start.x;
             y = rightEdge.m * x + rightEdge.c;
-        } else if (!isFinite(rightEdge.m)) {
+        }
+
+        // left-->\ |<--right
+        else if (!isFinite(rightEdge.m)) {
             x = rightEdge.start.x;
             y = leftEdge.m * x + leftEdge.c;
-        } else if (leftEdge.m === rightEdge.m) return undefined;
+        }
+
+        // left-->\ /<--right
         else {
             x = (rightEdge.c - leftEdge.c) / (leftEdge.m - rightEdge.m);
             y = leftEdge.m * x + leftEdge.c;
         }
 
-        if ((x - leftEdge.start.x) / leftEdge.direction.x < 0) return undefined;
-        if ((y - leftEdge.start.y) / leftEdge.direction.y < 0) return undefined;
+        // Edges can never meet because of opposite direction from the intersection point
+        if ((x - leftEdge.start.x) / leftEdge.direction.x < 0) return false;
+        if ((y - leftEdge.start.y) / leftEdge.direction.y < 0) return false;
+        if ((x - rightEdge.start.x) / rightEdge.direction.x < 0) return false;
+        if ((y - rightEdge.start.y) / rightEdge.direction.y < 0) return false;
 
-        if ((x - rightEdge.start.x) / rightEdge.direction.x < 0)
-            return undefined;
-        if ((y - rightEdge.start.y) / rightEdge.direction.y < 0)
-            return undefined;
-
-        const intersectionPoint = new VPoint(x, y);
-        this.vertices!.push(intersectionPoint);
-
-        return intersectionPoint;
+        placeHolderPoint.x = x;
+        placeHolderPoint.y = y;
+        return true;
     }
 }
