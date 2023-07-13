@@ -1,6 +1,6 @@
 import VPoint from "./VPoint";
 
-const testPoints = (testCase: 0 | 1 | 2 | 3 | 31 | 32 | 4 | 5) => {
+const testPoints = (testCase: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
     const initialPoints: VPoint[] = [];
 
     switch (testCase) {
@@ -42,7 +42,7 @@ const testPoints = (testCase: 0 | 1 | 2 | 3 | 31 | 32 | 4 | 5) => {
         initialPoints.push(new VPoint(400, 300));
         break;
 
-    case 31:
+    case 4:
         // Test case 3a: Points with equal y (where those points are the first points).
         //               With a third point that exactly lines up with the edge between the first 2.
         //               Requires the special case for edges that intersect at both of their starting points (they should not be counted as intersecting).
@@ -51,14 +51,14 @@ const testPoints = (testCase: 0 | 1 | 2 | 3 | 31 | 32 | 4 | 5) => {
         initialPoints.push(new VPoint(400, 300));
         break;
 
-    case 32:
+    case 5:
         // Test case 3b: 3 points with equal y (and nothing else)
         initialPoints.push(new VPoint(300, 300));
         initialPoints.push(new VPoint(200, 300));
         initialPoints.push(new VPoint(400, 300));
         break;
 
-    case 4:
+    case 6:
         // Test case 4: A completely-surrounded site
         initialPoints.push(new VPoint(100, 100));
         initialPoints.push(new VPoint(500, 150));
@@ -67,7 +67,7 @@ const testPoints = (testCase: 0 | 1 | 2 | 3 | 31 | 32 | 4 | 5) => {
         initialPoints.push(new VPoint(500, 500));
         break;
 
-    case 5:
+    case 7:
         // Test case 5: An arc gets squeezed by a later-created arc before it would be squeezed by its original edges.
         //              Requires handling of events that get "pre-empted" and are no longer required by the time they would execute.
         initialPoints.push(new VPoint(300, 500));
