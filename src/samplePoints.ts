@@ -36,7 +36,7 @@ const testPoints = (testCase: 0 | 1 | 2 | 3 | 31 | 32 | 4 | 5) => {
     case 3:
         // Test case 3: Points with equal y (where those points are the first points)
         //              With a third point that is slightly off to one side.
-        //              Requires a special case for the first points to prevent errors in finding the replacedarc
+        //              Requires a special case for the first points to prevent errors in finding the replaced arc
         initialPoints.push(new VPoint(320, 200));
         initialPoints.push(new VPoint(200, 300));
         initialPoints.push(new VPoint(400, 300));
